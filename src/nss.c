@@ -88,6 +88,13 @@ enum nss_status _nss_mdns_gethostbyname_impl(const char* name, int af,
     FILE* mdns_allow_file = NULL;
     use_name_result_t result;
 
+    if (strchr(name, '.') == NULL) {
+        char name_dot_local[strlen(name) + 7];
+        strcpy(name_dot_local, name);
+        strcpy(name_dot_local + strlen(name), ".local");
+        return _nss_mdns_gethostbyname_impl(name_dot_local, af, u, errnop, h_errnop);
+    }
+
 #ifdef NSS_IPV4_ONLY
     if (af == AF_UNSPEC) {
         af = AF_INET;
